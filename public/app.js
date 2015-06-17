@@ -2,6 +2,14 @@ function writeLine(name, line) {
   $('.chatlines').append('<li class="talk"><span class="nick">&lt;' + name + '&gt;</span> ' + line + '</li>');
 }
 
+function writeAction(name, action) {
+    var actionStrings = {'trout': 'slaps the room around with a large trout',
+                         'rofl': 'rolls around on the floor laughing',
+                         'sad': 'looks rather sad :(',
+                         'boost': 'scatters Boost around the room liberally.'};
+    $('.chatlines').append('<li class="action">' + name + ' ' + actionStrings[action] + '</li>');
+}
+
 $(document).ready(function() {
   var socket = io();
   socket.on('connected', function() {
@@ -18,12 +26,11 @@ $(document).ready(function() {
     $line.val("");
   });
 
-  function writeAction(name, action) {
-    var actionStrings = {'trout': 'slaps the room around with a large trout',
-                         'rofl': 'rolls around on the floor laughing',
-                         'sad': 'looks rather sad :(',
-                         'boost': 'scatters Boost around the room liberally.'};
-    $('.chatlines').append('<li class="action">' + name + ' ' + actionStrings[action] + '</li>');
-  }
-
+  $('.actions button').on('click', function(ev) {
+    
+    var $name = $('#nick');
+    var $button = $(ev.currentTarget);
+    socket.emit('action', {name: $name.val(), action: $button.data('type')});
+    writeAction($name.val(), $button.data('type'));
+  });
 })
